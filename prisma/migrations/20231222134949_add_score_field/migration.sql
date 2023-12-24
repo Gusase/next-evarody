@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `comments` ADD COLUMN `score` TINYINT NOT NULL DEFAULT 9;
