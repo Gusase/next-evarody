@@ -5,7 +5,6 @@ import Pagination from "@/components/Navigation/Pagination";
 import AnimeSearchList from "@/components/Wrapper/AnimeSearchWrap";
 import { useEffect, useState } from "react";
 import { getAnimeResponse } from "../../../source/anime-api";
-import Loading from "../loading";
 
 const Page = () => {
   const [page, setPage] = useState(1);

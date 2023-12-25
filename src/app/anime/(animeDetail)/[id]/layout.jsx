@@ -1,18 +1,17 @@
 import { getAnimeResponse } from "@/source/anime-api";
-import Image from "next/image";
-import Link from "next/link";
-import CollectButton from "@/components/Partials/CollectButton";
 import { authSession } from "@/source/auth";
-import prisma from "@/source/database/prisma";
-import Comment from "@/components/Partials/Comment";
-import CommentWrap from "@/components/Partials/CommentWrap";
 import NavigationDetail from "@/components/Partials/Anime";
-import Detail from "@/components/Partials/Anime/Detail";
+import CollectButton from "@/components/Partials/CollectButton";
+import Img from "@/components/Ui/Img";
+import Link from "next/link";
 
-const Page = async ({ params: { id } }) => {
+const AnimeDetail = async ({ params: { id }, children }) => {
   const { data } = await getAnimeResponse(`anime/${id}`); //get data prop from api
   const image = await getAnimeResponse(`anime/${id}/pictures`);
-  const rand =image &&image.data[Math.floor(Math.random() * image.data.length)].jpg.large_image_url;
+  const rand =
+    image &&
+    image.data[Math.floor(Math.random() * image.data.length)].jpg
+      .large_image_url;
   const user = await authSession();
   let collected = false;
 
@@ -32,6 +31,7 @@ const Page = async ({ params: { id } }) => {
   }
 
   const img = data.images.webp.large_image_url;
+
   return (
     <>
       <header
@@ -42,16 +42,13 @@ const Page = async ({ params: { id } }) => {
       >
         <div className="absolute inset-x-0 top-0 block md:hidden md:invisible -z-[1]">
           <div className="relative h-48">
-            <Image
+            <Img
               src={rand}
-              width={"0"}
-              height={"0"}
-              sizes="100vw"
-              style={{ width: "100%", height: "100%" }}
-              alt=""
+              alt="..."
+              radius={"none"}
               className="block md:hidden md:invisible h-full w-full object-cover"
             />
-            <div className="absolute bg-gradient-to-t from-[#141414] inset-0"></div>
+            <div className="absolute bg-gradient-to-t from-[#141414] inset-0 z-10"></div>
           </div>
         </div>
         <div className="txt flex flex-col z-30 min-w-full sm:min-w-[500px]">
@@ -60,16 +57,13 @@ const Page = async ({ params: { id } }) => {
               href="https://anime.jp/anime/30/shinseiki_evangelion/pics"
               className="block h-full"
             >
-              <Image
+              <Img
                 src={img}
                 alt="Poster"
                 title={data.title_english || data.title}
                 className="h-auto max-w-full hover:brightness-105 bg-gray-800"
-                width={"0"}
-                height={"0"}
-                sizes="100vw"
-                style={{ width: "100%", height: "100%" }}
                 id="image"
+                radius={"none"}
               />
             </Link>
           </div>
@@ -94,18 +88,14 @@ const Page = async ({ params: { id } }) => {
             <p className="pt-4 text-base font-normal leading-5 text-white max-w-full line-clamp-4">
               {data.synopsis}
             </p>
-            {collected ? (
-              <CollectButton text={"Collected"} collected={true} />
-            ) : (
-              <CollectButton
-                anime_mal_id={id}
-                anime_image={img}
-                anime_title={data.title_english || data.title}
-                user_email={user?.email}
-                text={"Collect"}
-                collected={false}
-              />
-            )}
+            <CollectButton
+              anime_mal_id={id}
+              anime_image={img}
+              anime_title={data.title_english || data.title}
+              user_email={user?.email}
+              text={collected ? "Collected" : "Collect"}
+              collected={collected ? "delete" : "create"}
+            />
             {!user && (
               <p className="text-white text-xs mt-3 border-l pl-2 border-gray-300">
                 You must signin to collect this anime
@@ -116,30 +106,13 @@ const Page = async ({ params: { id } }) => {
         <div className="header-sec absolute inset-y-0 left-0 w-2/5 z-10 hidden md:block"></div>
       </header>
 
-      <NavigationDetail id={id}/>
+      <NavigationDetail id={id} />
 
       <main className="mx-auto sm:px-10 md:px-28 lg:px-32 max-w-[1600px] px-[5vw] min-[2368px]:px-[1.5vw]">
-          <Detail id={id} anime={data}/>
+        <section>{children}</section>
       </main>
-
-      <div className="max-w-5xl mx-auto">
-        <div className="my-5">
-          <CommentWrap id={id} />
-        </div>
-
-        {user && (
-          <Comment
-            anime_image={img}
-            anime_title={data.title_english || data.title}
-            user_email={user?.email}
-            user_name={user?.name}
-            user_image={user?.image}
-            anime_mal_id={id}
-          />
-        )}
-      </div>
     </>
   );
 };
 
-export default Page;
+export default AnimeDetail;

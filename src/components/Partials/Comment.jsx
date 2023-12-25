@@ -1,8 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Rating from "./Rating";
+import { Textarea } from "@nextui-org/react";
+import PrimaryButton from "../Ui/PrimaryButton";
 
 const Comment = ({
   anime_mal_id,
@@ -14,27 +16,17 @@ const Comment = ({
 }) => {
   const route = useRouter();
   const [user_comment, setUserComment] = useState("");
+  const [invalid, isInvalid] = useState(false);
   const [isClick, setClick] = useState(false);
   const [score, setScore] = useState(null);
-  const inputRef = useRef("");
-  const warn = inputRef.current;
 
-  useEffect(() => {
-    isClick && warn.classList.add("hidden");
-  }, [!isClick]);
+  const handleWriteLength = (e) => {
+    let txt = e.target.value;
+    txt.trim().length > 191 ? isInvalid(true) : isInvalid(false);
+  };
 
-  function handleWriteLength() {
-    warn.textContent = `${user_comment.length} of 191 character`;
-    user_comment.length == 0
-      ? warn.classList.add("hidden")
-      : warn.classList.remove("hidden");
-    user_comment.length > 191
-      ? warn.classList.add("!text-red-600")
-      : warn.classList.remove("!text-red-600");
-  }
-
-  const handleValue = (e) => {
-    setUserComment(e.target.value);
+  const handleValue = (value) => {
+    setUserComment(value);
   };
 
   const handlePost = async (e) => {
@@ -72,41 +64,32 @@ const Comment = ({
     <>
       <div className="w-full mb-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
         <div className="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
-          <label htmlFor="comment" className="sr-only">
-            Your comment
-          </label>
-          <textarea
-            onChange={handleValue}
-            onKeyUpCapture={handleWriteLength}
-            id="comment"
-            rows="4"
-            value={user_comment}
-            className="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400 focus:outline-none"
+          <Textarea
+            variant="bordered"
+            label="Your comment"
+            labelPlacement="outside"
             placeholder="Write a comment..."
-          ></textarea>
+            disableAutosize
+            value={user_comment}
+            classNames={{
+              errorMessage: invalid ? "block" : "hidden",
+              input: "resize-y min-h-[40px]",
+            }}
+            description="Your comment must be less than 191 chars and greater than 20 chars"
+            className="w-full px-0 text-sm border-0 bg-gray-800 focus:ring-0 text-white placeholder-gray-400 focus:outline-none"
+            errorMessage={`Your comments too long. (${user_comment.length} of 191)`}
+            isInvalid={invalid}
+            onValueChange={handleValue}
+            onChange={handleWriteLength}
+          />
         </div>
         <div className="flex items-center justify-between px-3 py-2 border-t dark:border-gray-600">
           <div className="flex items-center gap-x-3">
-            <button
-              role="button"
-              onClick={handlePost}
-              disabled={
-                user_comment.length <= 3 ||
-                user_comment.length > 191 ||
-                score == null
-              }
-              className={`inline-flex items-center rounded-full active:scale-[.98] disabled:bg-white/80 disabled:cursor-not-allowed bg-white px-4 py-1.5 text-sm font-normal mx-auto sm:mx-0 text-neutral-950 transition hover:bg-neutral-200 min-[414px]:w-36 w-max`}
-            >
-              {isClick ? (
-                <div className="mx-auto">
-                </div>
-              ) : (
-                <div className="mx-auto">Post comment</div>
-              )}
-            </button>
+            <PrimaryButton load={isClick} handleClick={handlePost} disable={ user_comment.length <= 3 || user_comment.length > 191 || score == null} className={'inline-flex items-center rounded-full active:scale-[.98] disabled:bg-white/80 disabled:cursor-not-allowed bg-white px-2 py-1 text-sm font-normal mx-auto sm:mx-0 text-neutral-950 transition hover:bg-neutral-200 min-[414px]:w-36 w-max'}>
+                <div className="text-center">Post comment</div>
+            </PrimaryButton>
             <Rating setScore={setScore} clear={isClick} />
           </div>
-          <p className="text-white text-xs" ref={inputRef}></p>
         </div>
       </div>
     </>

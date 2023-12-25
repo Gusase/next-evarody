@@ -1,11 +1,23 @@
+"use client";
+
 import { getAnimeResponse } from "@/source/anime-api";
+import { Accordion, AccordionItem } from "@nextui-org/react";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const Detail = async ({ id, anime }) => {
-  const vp = await getAnimeResponse(`anime/${id}/videos`);
-  const promoVideo = vp?.data.promo[0];
-  const data  = anime;
+  const [promoVideo, setPromoVideo] = useState(null);
+
+  useEffect(() => {
+    const fetchPromoVideo = async () => {
+      const vp = await getAnimeResponse(`anime/${id}/videos`);
+      setPromoVideo(vp?.data.promo[0]);
+    };
+    fetchPromoVideo();
+  }, []);
+
+  const data = anime;
+
   return (
     <>
       <div className="mx-auto mt-12 sm:mt-20 lg:flex lg:max-w-none">
@@ -33,9 +45,8 @@ const Detail = async ({ id, anime }) => {
         {promoVideo && (
           <div className="ml-3">
             <div className="h-[133px] w-[200px]">
-              <a
-                href=""
-                rel="gallery"
+              <Link
+                href={promoVideo.trailer.url}
                 className="group relative inline-flex aspect-video h-full w-full items-end rounded bg-cover bg-center bg-no-repeat shadow duration-150 dark:hover:brightness-125 overflow-hidden"
                 style={{
                   backgroundImage: `url(
@@ -59,7 +70,7 @@ const Detail = async ({ id, anime }) => {
                 <span className="z-20 w-full bg-gradient-to-t from-black py-2 pl-1 text-sm text-white">
                   {promoVideo.title}
                 </span>
-              </a>
+              </Link>
               <small className="block text-right text-gray-400">
                 <Link
                   href={`/anime/${id}/videos`}
@@ -72,29 +83,18 @@ const Detail = async ({ id, anime }) => {
         )}
       </div>
 
-      <div className="mt-16">
-        <details open>
-          <summary>
-            <h2 className="flex w-full open:border-gray-200 cursor-pointer items-center justify-between gap-3 border-b border-gray-400 py-5 font-medium text-gray-500 duration-150 hover:border-gray-500">
-              <span className="text-3xl text-white">Overview</span>
-              <svg
-                className="h-3 w-3 shrink-0 rotate-180"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 10 6"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 5 5 1 1 5"
-                />
-              </svg>
-            </h2>
-          </summary>
-
+      <Accordion defaultExpandedKeys={["1"]}>
+        <AccordionItem
+          key="1"
+          aria-label="Overview"
+          title="Overview"
+          classNames={{
+            base: "-mx-2 mt-16",
+            heading:
+              "w-full data-[open=true]:border-gray-200 cursor-pointer border-b border-gray-400 font-medium text-gray-500 duration-150 hover:border-gray-500",
+            title: "text-3xl",
+          }}
+        >
           <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-3">
             <div className="rounded-sm bg-neutral-900 p-5 ring-1 ring-slate-900 duration-150 hover:shadow-md">
               <span className="block font-medium text-gray-50">
@@ -174,8 +174,8 @@ const Detail = async ({ id, anime }) => {
               </span>
             </div>
           </div>
-        </details>
-      </div>
+        </AccordionItem>
+      </Accordion>
     </>
   );
 };
