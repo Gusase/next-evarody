@@ -11,6 +11,9 @@ const nextConfig = {
       {
         hostname: "avatars.githubusercontent.com",
       },
+      {
+        hostname: "s4.anilist.co",
+      },
     ],
   },
 };

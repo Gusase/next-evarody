@@ -1,8 +1,12 @@
-import SearchCore from "@/components/Navigation/SearchCore";
+import SearchCore from "@/components/Layout/Search";
+import GenreCollections from "@/components/Layout/Search/GenreCollections";
 
 const Page = () => {
   return (
-    <SearchCore/>
+    <>
+      <SearchCore />
+      <GenreCollections />
+    </>
   );
 };
 

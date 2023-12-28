@@ -24,13 +24,10 @@ body {
       rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
 }
 
-details > summary {
-  list-style: none;
-}
-
-details > summary::marker, /* Latest Chrome, Edge, Firefox */ 
-details > summary::-webkit-details-marker /* Safari */ {
-  display: none;
+.no-scrollbar::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar-track-piece,
+.no-scrollbar::-webkit-scrollbar-track{
+    width: 0;
 }
 
 .font-s-75 {
@@ -64,7 +61,8 @@ details > summary::-webkit-details-marker /* Safari */ {
 }
 
 .overlay-img {
-  background-position: 200px 57%;
+  background-position: -680px 0px;
+  background-size: cover;
 }
 @media (min-width:768px) {
   .overlay-img::after {

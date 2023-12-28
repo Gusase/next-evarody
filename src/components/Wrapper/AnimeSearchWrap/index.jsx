@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Img from "@/components/Ui/Img";
 import Link from "next/link";
 
 const AnimeSearchList = ({ api }) => {
@@ -12,13 +12,10 @@ const AnimeSearchList = ({ api }) => {
             className="group relative isolate flex w-full flex-col items-center shadow-sm ring-blue-800 duration-200focus:ring-2 active:scale-[.98]"
           >
             <div className="aspect-[2_/_3] w-full">
-              <Image
+              <Img
                 src={anime.images.webp.image_url}
-                width={"0"}
-                height={"0"}
-                alt="..."
-                sizes="100vw"
-                style={{ width: "100%", height: "100%" }}
+                alt={"..."}
+                radius={"md"}
                 className="h-full w-full bg-gray-900 object-cover transition-transform group-hover:brightness-105 rounded"
               />
             </div>
