@@ -1,15 +1,34 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { createUrl } from "@/source/utils";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useRef } from "react";
 
 const Search = () => {
   const searchRef = useRef();
   const route = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  const handleSearchRequest = () => {
-    route.push(`/search/${searchRef.current.value}`);
+  // const handleSearchRequest = (e) => {
+  //   e.preventDefault()
+  //   route.push(`/search/${searchRef.current.value}`);
+  // };
+
+  const submitQuery = (e) => {
+    e.preventDefault();
+    const val = e.target;
+    const search = val.searchAnime;
+    const newParams = new URLSearchParams(searchParams.toString());
+
+    if (search.value) {
+      newParams.set("q", search.value);
+    } else {
+      newParams.delete("q");
+    }
+
+    route.push(createUrl(`/search`, newParams));
   };
 
   if (pathname == "/search") {
@@ -17,49 +36,25 @@ const Search = () => {
   }
 
   return (
-    <form className="w-4/5 max-md:mx-auto sm:w-full">
+    <form className="w-4/5 max-md:mx-auto sm:w-full" onSubmit={submitQuery}>
       <div className="relative">
-        <button
-          type="submit"
-          className="absolute z-10 inset-y-0 start-0 flex items-center justify-center h-9 w-9 mt-[6px] ml-2 rounded-lg hover:bg-foreground-lg duration-150 mx-auto"
+        <div
+          className="absolute z-10 right-0 top-0 mr-3 flex items-center justify-center h-full ml-2 rounded-lg hover:bg-foreground-lg duration-150 mx-auto"
           title="Search something"
-          onClick={handleSearchRequest}
         >
-          <svg
-            className="w-4 h-4 text-gray-500"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 20 20"
-          >
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-            />
-          </svg>
-          <span className="sr-only">Enter to search</span>
-        </button>
+          <MagnifyingGlassIcon className="h-4" />
+        </div>
         <input
+          key={searchParams?.get("q")}
           type="text"
+          name="searchAnime"
+          autoComplete="off"
           id="global-search"
-          className="block w-full p-4 pl-12 md:px-12 text-sm text-white border-0 focus:outline-none focus:ring-1 focus:ring-gray-300 rounded-xl focus:bg-[#181818] duration-150 bg-[#202020] h-12"
+          className="w-full rounded-lg border pl-4 pr-8 py-2.5 hover:border-neutral-700 text-sm border-neutral-800 bg-transparent text-white placeholder:text-neutral-400 focus:outline-none focus:ring ring-gray-500 ring-inset duration-300 focus:bg-neutral-900"
           placeholder="Search..."
+          defaultValue={""}
           ref={searchRef}
         />
-        <div className="absolute z-10 inset-y-0 end-0 hidden md:flex items-center ml-1 h-9 w-9 mt-[6px] mr-2 rounded-lg">
-          <label
-            htmlFor="global-search"
-            className="mx-auto cursor-pointer flex"
-            title="Press / to search"
-          >
-            <kbd className="px-2.5 py-1.5 text-xs font-semibold text-gray-800 select-none bg-gray-500 rounded-lg ring-1 ring-gray-900/20">
-              /
-            </kbd>
-          </label>
-        </div>
       </div>
     </form>
   );

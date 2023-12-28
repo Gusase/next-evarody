@@ -54,7 +54,7 @@ const CollectButton = ({
   text = collect ? "Collected" : text;
   return (
     <PrimaryButton
-      className="mt-4 relative inline-flex items-center rounded-full active:scale-[.98] disabled:bg-white/80 disabled:cursor-not-allowed bg-white px-2 py-1.5 text-sm font-normal mx-auto sm:mx-0 text-neutral-950 transition hover:bg-neutral-200 min-[414px]:w-36 w-max"
+      className="relative inline-flex items-center rounded-full active:scale-[.98] disabled:bg-white/80 disabled:cursor-not-allowed bg-white px-2 py-1.5 text-sm font-normal mx-auto sm:mx-0 text-neutral-950 transition hover:bg-neutral-200 min-[414px]:w-36 w-max"
       handleClick={handleCollect}
       load={isClick}
     >

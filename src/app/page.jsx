@@ -1,39 +1,35 @@
 import AnimeGridWrap from "@/components/Wrapper/AnimeList";
 import Header from "@/components/Wrapper/AnimeList/Header";
-import Script from "next/script";
-import {
-  getAnimeResponse,
-  getNestedResponse,
-  refresh,
-} from "../source/anime-api";
+import { getOverview, refresh } from "../source/anime-api";
 import { authSession } from "@/source/auth";
+import Sidebar from "@/components/Layout/Sidebar";
 
 const Page = async () => {
   const user = await authSession();
-  let relevantAnime = await getNestedResponse("recommendations/anime", "entry");
-  relevantAnime = refresh(relevantAnime, 14);
-  const seasonNowAnime = await getAnimeResponse("seasons/now", "limit=14");
-  const seasonDataName = seasonNowAnime && `${seasonNowAnime.data[0].season} ${seasonNowAnime.data[0].year} Anime`
-  const topAnime = await getAnimeResponse("top/anime", "limit=14");
-  const topUpcoming = await getAnimeResponse("top/anime", "limit=14&filter=upcoming");
-  const topAiring = await getAnimeResponse("top/anime", "limit=14&filter=airing");
-  const topSpecial = await getAnimeResponse("top/anime", "limit=14&type=special");
-  const topMovie = await getAnimeResponse("top/anime", "limit=14&type=movie");
+  // let relevantAnime = await getNestedResponse("recommendations/anime", "entry");
+  // relevantAnime = refresh(relevantAnime, 14);
+  // const { media } = await getAnimeBasedOn({
+  //   order: ["TRENDING_DESC", "POPULARITY_DESC"],
+  // });
+
+  const overview = await getOverview({
+    nextSeason: "WINTER",
+    nextYear: 2024,
+    season: "FALL",
+    seasonYear: 2023,
+  });
+
+  const trendingAnime = overview.trending.media;
+  const thisSeasonAnime = overview.season.media;
+  const upcomingAnime = overview.nextSeason.media;
+  const topAnime = overview.popular.media;
 
   return (
     <main className="px-5 min-[1760px]:px-36">
       <div className="container flex flex-row-reverse flex-wrap gap-x-7">
-        <div className="mt-9 w-[calc(25%_-_1rem)] py-10">
-          <div className="sticky top-20 rounded-2xl bg-[#232323] pb-8 pt-5 lg:flex lg:flex-col lg:justify-center">
-            <h4 className="mb-4 px-5 text-xl font-bold text-white 2xl:text-2xl">
-              Genre
-            </h4>
-            <div className="flex flex-wrap gap-1 px-5">
-              <a className="basis-auto rounded-md bg-blue-700 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm duration-150 hover:scale-[.98] hover:bg-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white 2xl:text-base">
-                oke
-                <span className="ml-px rounded bg-white px-2 py-0.5 text-xs font-medium text-black"></span>
-              </a>
-            </div>
+        <div className="mt-9 w-[calc(25%_-_1rem)] py-10 md:block hidden">
+          <div className="sticky top-20 rounded-2xl bg-neutral-900 pb-8 pt-5 lg:flex lg:flex-col lg:justify-center">
+            <Sidebar />
           </div>
         </div>
         <div className="w-[calc(75%_-_0.875rem)]">
@@ -48,8 +44,8 @@ const Page = async () => {
             <section className="max-w-full py-12 mt-3 flex w-full flex-col items-center md:flex-row">
               <div className="w-full">
                 <div className="cc relative">
-                  <Header text={seasonDataName} url={"/anime/seasonal"} />
-                  <AnimeGridWrap api={seasonNowAnime} />
+                  <Header text={"Trending now"} url={"/anime/trending"} />
+                  <AnimeGridWrap api={trendingAnime} />
                 </div>
               </div>
             </section>
@@ -57,8 +53,20 @@ const Page = async () => {
             <section className="max-w-full py-12 mt-3 flex w-full flex-col items-center md:flex-row">
               <div className="w-full">
                 <div className="cc relative">
-                  <Header text={"Recommendations"} url={""} />
-                  <AnimeGridWrap api={relevantAnime} />
+                  <Header text={"Popular this season"} url={""} />
+                  <AnimeGridWrap api={thisSeasonAnime} />
+                </div>
+              </div>
+            </section>
+
+            <section className="max-w-full pb-12 mt-3 flex w-full flex-col items-center md:flex-row">
+              <div className="w-full">
+                <div className="cc relative">
+                  <Header
+                    text={"Top Upcoming Anime"}
+                    url={"/topanime/upcoming"}
+                  />
+                  <AnimeGridWrap api={upcomingAnime} />
                 </div>
               </div>
             </section>
@@ -72,16 +80,7 @@ const Page = async () => {
               </div>
             </section>
 
-            <section className="max-w-full pb-12 mt-3 flex w-full flex-col items-center md:flex-row">
-              <div className="w-full">
-                <div className="cc relative">
-                  <Header text={"Top Upcoming Anime"} url={"/topanime/upcoming"} />
-                  <AnimeGridWrap api={topUpcoming} />
-                </div>
-              </div>
-            </section>
-
-            <section className="max-w-full pb-12 mt-3 flex w-full flex-col items-center md:flex-row">
+            {/* <section className="max-w-full pb-12 mt-3 flex w-full flex-col items-center md:flex-row">
               <div className="w-full">
                 <div className="cc relative">
                   <Header text={"Top Airing Anime"} url={""} />
@@ -106,9 +105,7 @@ const Page = async () => {
                   <AnimeGridWrap api={topSpecial} />
                 </div>
               </div>
-            </section>
-
-            <Script src={"js/load.js"}></Script>
+            </section> */}
           </div>
         </div>
       </div>

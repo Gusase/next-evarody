@@ -2,17 +2,20 @@
 
 import { Navbar, NavbarContent, NavbarItem } from "@nextui-org/react";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 
 const NavigationDetail = ({ id }) => {
+  const [active, setActive] = useState("");
+
   const navigation = [
-    { Detials: "/" },
-    { "Characters & Staff": "/chars" },
-    { Videos: "/videos" },
-    { Episodes: "/episodes" },
-    { Reviews: "/reviews" },
-    { Pictures: "/pict" },
+    { Details: "/", key: 1 },
+    { "Characters & Staff": "/chars", key: 2 },
+    { Videos: "/videos", key: 3 },
+    { Episodes: "/episodes", key: 4 },
+    { Reviews: "/reviews", key: 5 },
+    { Pictures: "/pict", key: 6 },
   ];
+  
   return (
     <Navbar
       isBlurred={false}
@@ -26,9 +29,11 @@ const NavigationDetail = ({ id }) => {
           "data-[active=true]:after:content-['']",
           "data-[active=true]:after:absolute",
           "data-[active=true]:after:bottom-0",
-          "data-[active=t rue]:after:left-0",
+          "data-[active=true]:after:left-0",
           "data-[active=true]:after:right-0",
           "data-[active=true]:after:h-[2px]",
+          "data-[active=true]:after:h-px",
+          "data-[active=true]:after:w-full",
           "data-[active=true]:after:rounded-[2px]",
           "data-[active=true]:after:bg-white/90",
         ],
@@ -39,7 +44,13 @@ const NavigationDetail = ({ id }) => {
           const text = Object.keys(route)[0];
           const url = Object.values(route)[0];
           return (
-            <NavbarItem key={index}>
+            <NavbarItem
+              key={index}
+              isActive={url == active}
+              onClick={() => {
+                setActive(url);
+              }}
+            >
               <Link
                 href={`/anime/${id}${url}`}
                 className="inline-block rounded px-2 py-1 hover:bg-gray-100 hover:text-black dark:hover:bg-gray-900 dark:hover:text-white"
